@@ -2,16 +2,91 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Post {
+  id              String      @id @default(cuid())
+  projectId       String
+  userId          String
+  templateId      String?
+  title           String      @db.TinyText
+  slug            String      @db.TinyText
+  body            String      @db.Text
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  allowComments   Boolean     @default(true)
+  isPrivate       Boolean     @default(true)
+  isEdited        Boolean     @default(false)
+  isFlagged       Boolean     @default(false)
+  overrideFlag    Boolean     @default(false)
+  PostMedia       PostMedia[]
+  Comments        Comment[]
+  PostLikes       PostLike[]
+
+  @@index([projectId])
+  @@index([templateId])
+}
+
+model PostMedia {
+  id        String   @id @default(cuid())
+  postId    String
+  createdAt DateTime @default(now())
+  src       String   @db.TinyText
+  alt_text  String   @db.TinyText
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+}
+
+model PostLike {
+  id     String @id @default(cuid())
+  postId String
+  userId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+}
+
+model Comment {
+  id           String         @id @default(cuid())
+  postId       String
+  parentId     String?
+  body         String         @db.Text
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  edited       Boolean        @default(false)
+  flagged      Boolean        @default(false)
+  overrideFlag Boolean        @default(false)
+  post         Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
+  CommentMedia CommentMedia[]
+  CommentLikes CommentLike[]
+
+  @@index([postId])
+}
+
+model CommentMedia {
+  id        String   @id @default(cuid())
+  commentId String
+  createdAt DateTime @default(now())
+  src       String   @db.TinyText
+  alt_text  String   @db.TinyText
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([commentId])
+}
+
+model CommentLike {
+  id        String  @id @default(cuid())
+  commentId String
+  userId    String
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([commentId])
 }
