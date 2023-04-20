@@ -1,21 +1,10 @@
-"use client";
-
-import { Inter } from "next/font/google";
 import { useSession, signIn, signOut } from "next-auth/react";
-
-const inter = Inter({ subsets: ["latin"] });
-
-// export const metadata = {
-// 	title: "Home",
-// 	description: "You're home.",
-// };
-
-export default function Home() {
+export default function Component() {
 	const { data: session } = useSession();
-	if (session) {
+	if (session?.user) {
 		return (
 			<>
-				Signed in as {session.user?.email} <br />
+				Signed in as {session.user.email} <br />
 				<button onClick={() => signOut()}>Sign out</button>
 			</>
 		);
