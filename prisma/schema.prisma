@@ -12,81 +12,44 @@ datasource db {
 }
 
 model Post {
-  id              String      @id @default(cuid())
-  projectId       String
-  userId          String
-  templateId      String?
-  title           String      @db.TinyText
-  slug            String      @db.TinyText
-  body            String      @db.Text
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  allowComments   Boolean     @default(true)
-  isPrivate       Boolean     @default(true)
-  isEdited        Boolean     @default(false)
-  isFlagged       Boolean     @default(false)
-  overrideFlag    Boolean     @default(false)
-  PostMedia       PostMedia[]
-  Comments        Comment[]
-  PostLikes       PostLike[]
+  id             String        @id @default(cuid())
+  projectId      String
+  userId         String
+  parentId       String?
+  body           String        @db.VarChar(20)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  allowComments  Boolean       @default(true)
+  isPrivate      Boolean       @default(true)
+  isEdited       Boolean       @default(false)
+  isFlagged      Boolean       @default(false)
+  overrideFlag   Boolean       @default(false)
+  likes          Like[]
+  directParent   Post?         @relation("DirectParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  directChildren Post[]        @relation("DirectParent")
+  parents        ParentChild[] @relation("parents")
+  children       ParentChild[] @relation("children")
 
   @@index([projectId])
-  @@index([templateId])
+  @@index([parentId])
 }
 
-model PostMedia {
-  id        String   @id @default(cuid())
-  postId    String
-  createdAt DateTime @default(now())
-  src       String   @db.TinyText
-  alt_text  String   @db.TinyText
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+model ParentChild {
+  id       String @id @default(cuid())
+  parentId String
+  childId  String
+  parent   Post   @relation("parents", fields: [parentId], references: [id], onDelete: Cascade)
+  child    Post   @relation("children", fields: [childId], references: [id], onDelete: Cascade)
 
-  @@index([postId])
+  @@index([parentId])
+  @@index([childId])
 }
 
-model PostLike {
+model Like {
   id     String @id @default(cuid())
   postId String
   userId String
   post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@index([postId])
-}
-
-model Comment {
-  id           String         @id @default(cuid())
-  postId       String
-  parentId     String?
-  body         String         @db.Text
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  edited       Boolean        @default(false)
-  flagged      Boolean        @default(false)
-  overrideFlag Boolean        @default(false)
-  post         Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
-  CommentMedia CommentMedia[]
-  CommentLikes CommentLike[]
-
-  @@index([postId])
-}
-
-model CommentMedia {
-  id        String   @id @default(cuid())
-  commentId String
-  createdAt DateTime @default(now())
-  src       String   @db.TinyText
-  alt_text  String   @db.TinyText
-  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
-
-  @@index([commentId])
-}
-
-model CommentLike {
-  id        String  @id @default(cuid())
-  commentId String
-  userId    String
-  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
-
-  @@index([commentId])
 }
