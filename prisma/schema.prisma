@@ -11,26 +11,42 @@ datasource db {
   relationMode = "prisma"
 }
 
+enum CanReply {
+  EVERYONE
+  FOLLOWERS
+  MENTIONS
+  NOONE
+}
+
+model Account {
+  id     String @id @default(cuid())
+  userId String
+  private Boolean @default(false)
+  active Boolean @default(true)
+  deactivatedOn DateTime
+  Post   Post[]
+}
+
 model Post {
-  id             String        @id @default(cuid())
-  projectId      String
-  userId         String
-  parentId       String?
-  body           String        @db.VarChar(20)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  allowComments  Boolean       @default(true)
-  isPrivate      Boolean       @default(true)
-  isEdited       Boolean       @default(false)
-  isFlagged      Boolean       @default(false)
-  overrideFlag   Boolean       @default(false)
-  likes          Like[]
+  id            String   @id @default(cuid())
+  accountId     String
+  parentId      String?
+  body          String   @db.VarChar(20)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  allowComments CanReply @default(EVERYONE)
+  isPrivate     Boolean  @default(true)
+  isEdited      Boolean  @default(false)
+  isFlagged     Boolean  @default(false)
+  overrideFlag  Boolean  @default(false)
+  account       Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
   directParent   Post?         @relation("DirectParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   directChildren Post[]        @relation("DirectParent")
   parents        ParentChild[] @relation("parents")
   children       ParentChild[] @relation("children")
+  likes          Like[]
 
-  @@index([projectId])
+  @@index([accountId])
   @@index([parentId])
 }
 
