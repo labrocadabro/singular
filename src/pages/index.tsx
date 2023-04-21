@@ -5,10 +5,10 @@ import { api } from "~/utils/api";
 const Home: NextPage = () => {
   const { data: postData } = api.posts.list.useQuery({ limit: 10 });
   const formatPosts = (posts: Post[]) => {
-    return posts.map((post) => <li>{post.body}</li>);
+    return posts.map((post) => <li key={post.id}>{post.body}</li>);
   };
   const posts = postData?.map((post) => (
-    <li>
+    <li key={post.id}>
       {post.body}
       <ul>{formatPosts(post.directChildren)}</ul>
     </li>

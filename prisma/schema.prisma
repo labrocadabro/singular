@@ -19,27 +19,28 @@ enum CanReply {
 }
 
 model Account {
-  id     String @id @default(cuid())
-  userId String
-  private Boolean @default(false)
-  active Boolean @default(true)
+  id            String   @id @default(cuid())
+  userId        String
+  private       Boolean  @default(false)
+  active        Boolean  @default(true)
   deactivatedOn DateTime
-  Post   Post[]
+  Post          Post[]
+  Like          Like[]
 }
 
 model Post {
-  id            String   @id @default(cuid())
-  accountId     String
-  parentId      String?
-  body          String   @db.VarChar(20)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  allowComments CanReply @default(EVERYONE)
-  isPrivate     Boolean  @default(true)
-  isEdited      Boolean  @default(false)
-  isFlagged     Boolean  @default(false)
-  overrideFlag  Boolean  @default(false)
-  account       Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  id             String        @id @default(cuid())
+  accountId      String
+  parentId       String?
+  body           String        @db.VarChar(20)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  allowComments  CanReply      @default(EVERYONE)
+  isPrivate      Boolean       @default(true)
+  isEdited       Boolean       @default(false)
+  isFlagged      Boolean       @default(false)
+  overrideFlag   Boolean       @default(false)
+  account        Account       @relation(fields: [accountId], references: [id], onDelete: Cascade)
   directParent   Post?         @relation("DirectParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   directChildren Post[]        @relation("DirectParent")
   parents        ParentChild[] @relation("parents")
@@ -62,10 +63,12 @@ model ParentChild {
 }
 
 model Like {
-  id     String @id @default(cuid())
-  postId String
-  userId String
-  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  postId    String
+  accountId String
+  post      Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  account   Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
   @@index([postId])
+  @@index([accountId])
 }
