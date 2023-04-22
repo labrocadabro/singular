@@ -12,7 +12,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header />
-      <main className="p-3">{children}</main>
+      <main className="mx-auto max-w-[400px] border p-4">{children}</main>
       <Footer />
     </>
   );

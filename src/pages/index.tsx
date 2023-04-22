@@ -2,6 +2,7 @@ import { type NextPage } from "next";
 import type { Post } from "@prisma/client";
 import { api } from "~/utils/api";
 import AddPost from "~/components/AddPost";
+import Link from "next/link";
 
 const Home: NextPage = () => {
   const { data: postData } = api.posts.list.useQuery({ limit: 10 });
@@ -10,16 +11,16 @@ const Home: NextPage = () => {
   };
   const posts = postData?.map((post) => (
     <li key={post.id}>
-      {post.body}
-      <ul>{formatPosts(post.directChildren)}</ul>
+      <Link href={`post/${post.id}`}>{post.body}</Link>
+      <ul className="ml-6">{formatPosts(post.directChildren)}</ul>
     </li>
   ));
   return (
-    <>
-      <h1>Home</h1>
+    <section>
+      <h2>Feed</h2>
       <AddPost />
       <ul>{posts}</ul>
-    </>
+    </section>
   );
 };
 

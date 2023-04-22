@@ -24,6 +24,7 @@ model Account {
   private       Boolean  @default(false)
   active        Boolean  @default(true)
   deactivatedOn DateTime
+  bio String        @db.VarChar(20)
   Post          Post[]
   Like          Like[]
 }

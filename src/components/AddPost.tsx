@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { api } from "~/utils/api";
-// In component:
 
 interface FormInput {
   body: string;
@@ -15,13 +14,9 @@ export default function AddPost() {
     },
   });
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState,
-    formState: { isSubmitSuccessful },
-  } = useForm<FormInput>({ defaultValues: { body: "" } });
+  const { register, handleSubmit, reset, formState } = useForm<FormInput>({
+    defaultValues: { body: "" },
+  });
   const onSubmit: SubmitHandler<FormInput> = (data) => {
     mutate(data.body);
   };
@@ -35,8 +30,8 @@ export default function AddPost() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <label htmlFor="post">New post:</label>
-      <input {...register("body")} id="post" />
-      <input type="submit" />
+      <input {...register("body")} id="post" className="mx-1" />
+      <button type="submit">Add post</button>
     </form>
   );
 }

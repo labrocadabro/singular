@@ -29,4 +29,7 @@ export const postRouter = createTRPCRouter({
         },
       });
     }),
+  byId: publicProcedure.input(z.string()).query(({ ctx, input }) => {
+    return ctx.prisma.post.findUnique({ where: { id: input } });
+  }),
 });
