@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { api } from "~/utils/api";
 
 interface FormInput {
@@ -9,8 +9,8 @@ interface FormInput {
 export default function AddPost() {
   const utils = api.useContext();
   const { mutate, isSuccess: isPostAdded } = api.posts.addPost.useMutation({
-    onSuccess() {
-      utils.posts.list.invalidate();
+    async onSuccess() {
+      await utils.posts.list.invalidate();
     },
   });
 
@@ -25,7 +25,7 @@ export default function AddPost() {
     if (formState.isSubmitSuccessful && isPostAdded) {
       reset({ body: "" });
     }
-  }, [formState, reset]);
+  }, [formState, reset, isPostAdded]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
