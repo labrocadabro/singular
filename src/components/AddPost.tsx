@@ -1,16 +1,36 @@
+import { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { api } from "~/utils/api";
+// In component:
 
 interface FormInput {
   body: string;
 }
 
 export default function AddPost() {
-  const { register, handleSubmit } = useForm<FormInput>();
+  const utils = api.useContext();
+  const { mutate, isSuccess: isPostAdded } = api.posts.addPost.useMutation({
+    onSuccess() {
+      utils.posts.list.invalidate();
+    },
+  });
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState,
+    formState: { isSubmitSuccessful },
+  } = useForm<FormInput>({ defaultValues: { body: "" } });
   const onSubmit: SubmitHandler<FormInput> = (data) => {
     mutate(data.body);
   };
-  const { mutate } = api.posts.addPost.useMutation();
+
+  useEffect(() => {
+    if (formState.isSubmitSuccessful && isPostAdded) {
+      reset({ body: "" });
+    }
+  }, [formState, reset]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
