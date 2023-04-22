@@ -19,4 +19,14 @@ export const postRouter = createTRPCRouter({
         take: input.limit,
       });
     }),
+  addPost: publicProcedure
+    .input(z.string().max(20).min(1))
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.post.create({
+        data: {
+          accountId: "clgqdi7vw0000h1sz2sq7s11y",
+          body: input,
+        },
+      });
+    }),
 });

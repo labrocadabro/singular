@@ -1,6 +1,7 @@
 import { type NextPage } from "next";
 import type { Post } from "@prisma/client";
 import { api } from "~/utils/api";
+import AddPost from "~/components/AddPost";
 
 const Home: NextPage = () => {
   const { data: postData } = api.posts.list.useQuery({ limit: 10 });
@@ -16,6 +17,7 @@ const Home: NextPage = () => {
   return (
     <>
       <h1>Home</h1>
+      <AddPost />
       <ul>{posts}</ul>
     </>
   );
