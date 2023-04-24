@@ -10,9 +10,6 @@ export const postRouter = createTRPCRouter({
         where: {
           parentId: null,
         },
-        include: {
-          directChildren: true,
-        },
         orderBy: {
           createdAt: "desc",
         },
@@ -24,12 +21,20 @@ export const postRouter = createTRPCRouter({
     .mutation(({ ctx, input }) => {
       return ctx.prisma.post.create({
         data: {
-          accountId: "clgqdi7vw0000h1sz2sq7s11y",
+          accountId: "clgrlczy00000h13ir4lvltn1",
           body: input,
         },
       });
     }),
-  byId: publicProcedure.input(z.string()).query(({ ctx, input }) => {
-    return ctx.prisma.post.findUnique({ where: { id: input } });
+  byId: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    const post = await ctx.prisma.post.findUnique({
+      where: { id: input },
+      include: {
+        children: { include: { child: true } },
+        parents: true,
+      },
+    });
+    if (!post) return;
+    return { ...post, children: post.children.map((child) => child.child) };
   }),
 });
