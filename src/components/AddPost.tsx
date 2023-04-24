@@ -30,7 +30,12 @@ export default function AddPost() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <label htmlFor="post">New post:</label>
-      <input {...register("body")} id="post" className="mx-1" />
+      <input
+        {...register("body")}
+        id="post"
+        className="mx-1"
+        autoComplete="off"
+      />
       <button type="submit">Add post</button>
     </form>
   );

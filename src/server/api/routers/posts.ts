@@ -13,6 +13,14 @@ export const postRouter = createTRPCRouter({
         orderBy: {
           createdAt: "desc",
         },
+        include: {
+          _count: {
+            select: {
+              directChildren: true,
+              likes: true,
+            },
+          },
+        },
         take: input.limit,
       });
     }),
