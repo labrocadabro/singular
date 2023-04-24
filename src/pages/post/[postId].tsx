@@ -14,7 +14,9 @@ export default function PostDetails() {
     <>
       <h2>Post</h2>
       <p>{postData.body}</p>
-      <DisplayComments data={formattedPostData.children} />
+      {formattedPostData.children ? (
+        <DisplayComments data={formattedPostData.children} />
+      ) : null}
     </>
   );
 }

@@ -1,7 +1,9 @@
-export default function DisplayComments({ data }: { data: any }) {
+import type { Post } from "~/utils/preparePostData";
+
+export default function DisplayComments({ data }: { data: Post[] }) {
   return (
     <div style={{ paddingLeft: "20px" }}>
-      {data.map((parent: any) => {
+      {data.map((parent) => {
         return (
           <div key={parent.body}>
             <span>{parent.body}</span>

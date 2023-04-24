@@ -1,5 +1,4 @@
 import { type NextPage } from "next";
-import type { Post } from "@prisma/client";
 import { api } from "~/utils/api";
 import AddPost from "~/components/AddPost";
 import Link from "next/link";
