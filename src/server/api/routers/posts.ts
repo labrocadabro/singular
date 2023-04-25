@@ -1,5 +1,5 @@
 import { z } from "zod";
-
+import { RouterOutputs } from "~/utils/api";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const postRouter = createTRPCRouter({
@@ -45,4 +45,27 @@ export const postRouter = createTRPCRouter({
     if (!post) return;
     return { ...post, children: post.children.map((child) => child.child) };
   }),
+  getComments: publicProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const post = await ctx.prisma.post.findUnique({
+        where: { id: input },
+        include: {
+          directChildren: {
+            include: {
+              _count: {
+                select: {
+                  directChildren: true,
+                  likes: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      if (!post) return;
+      return post.directChildren;
+    }),
 });
+
+export type PostWithCounts = RouterOutputs["posts"]["list"][0];
