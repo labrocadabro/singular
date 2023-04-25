@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { RouterOutputs } from "~/utils/api";
+import type { RouterOutputs } from "~/utils/api";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const postRouter = createTRPCRouter({
@@ -25,12 +25,18 @@ export const postRouter = createTRPCRouter({
       });
     }),
   addPost: publicProcedure
-    .input(z.string().max(20).min(1))
+    .input(
+      z.object({
+        body: z.string().max(20).min(1),
+        parentId: z.string().optional(),
+      })
+    )
     .mutation(({ ctx, input }) => {
       return ctx.prisma.post.create({
         data: {
           accountId: "clgrlczy00000h13ir4lvltn1",
-          body: input,
+          body: input.body,
+          parentId: input.parentId ?? null,
         },
       });
     }),
@@ -59,6 +65,9 @@ export const postRouter = createTRPCRouter({
                   likes: true,
                 },
               },
+            },
+            orderBy: {
+              createdAt: "desc",
             },
           },
         },
