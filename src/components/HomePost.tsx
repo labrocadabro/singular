@@ -14,9 +14,12 @@ type Props = {
 
 export default function HomePost({ post }: Props) {
   const commentsState = useSelector((state: AppState) => state.comments);
-  const { data: commentData } = api.posts.getComments.useQuery(post.id, {
-    enabled: !!commentsState[post.id]?.visibleComments,
-  });
+  const { data: commentData, isLoading } = api.posts.getComments.useQuery(
+    post.id,
+    {
+      enabled: !!commentsState[post.id]?.visibleComments,
+    }
+  );
   return (
     <li className="my-2 border p-2">
       <Link href={`post/${post.id}`} className="block">
@@ -35,6 +38,9 @@ export default function HomePost({ post }: Props) {
       )}
       <BiHeart className="ml-10 inline" /> {post._count.likes}
       <AddPost parentId={post.id} />
+      {((!!commentsState[post.id]?.visibleComments && isLoading) ||
+        !!commentsState[post.id]?.addingNewComment) &&
+        "Loading..."}
       {commentData && <PostList posts={commentData} />}
     </li>
   );
