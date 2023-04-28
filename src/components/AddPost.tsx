@@ -51,38 +51,22 @@ export default function AddPost({ parentId }: Props) {
     );
     await mutateAsync({ body: data.body, parentId });
   };
-
-  if (!parentId) {
-    return (
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <label htmlFor="post">New {parentId ? "comment" : "post"}:</label>
-        <input
-          {...register("body")}
-          id="post"
-          className="mx-1"
-          autoComplete="off"
-        />
-        <button type="submit" disabled={isSubmitting}>
-          Add
-        </button>
-      </form>
-    );
-  }
   return (
     <>
-      {showForm ? (
-        <BiCommentMinus
-          onClick={() => {
-            setShowForm((prevState) => !prevState);
-          }}
-        />
-      ) : (
-        <BiCommentAdd
-          onClick={() => {
-            setShowForm((prevState) => !prevState);
-          }}
-        />
-      )}
+      {!!parentId &&
+        (showForm ? (
+          <BiCommentMinus
+            onClick={() => {
+              setShowForm((prevState) => !prevState);
+            }}
+          />
+        ) : (
+          <BiCommentAdd
+            onClick={() => {
+              setShowForm((prevState) => !prevState);
+            }}
+          />
+        ))}
 
       {(showForm || !parentId) && (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -98,6 +82,7 @@ export default function AddPost({ parentId }: Props) {
           </button>
         </form>
       )}
+      {!parentId && isSubmitting && "Loading..."}
     </>
   );
 }
