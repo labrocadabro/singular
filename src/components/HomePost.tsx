@@ -1,59 +1,41 @@
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import type { PostWithCounts } from "~/server/api/routers/posts";
 import AddPost from "./AddPost";
+import type { AppState } from "~/store/store";
+import { useSelector } from "react-redux";
+import PostList from "./PostList";
+import ShowCommentsButton from "./ShowCommentsButton";
+import { BiCommentDetail, BiHeart } from "react-icons/bi";
 
 type Props = {
   post: PostWithCounts;
 };
 
 export default function HomePost({ post }: Props) {
-  const [showComments, setShowComments] = useState(false);
-  const [commentAdded, setCommentAdded] = useState(0);
-  const utils = api.useContext();
-  const { data, isLoading, fetchStatus } = api.posts.getComments.useQuery(
-    post.id,
-    {
-      enabled: showComments || commentAdded > 0,
-    }
-  );
-  function wrapChildren(posts: PostWithCounts[]) {
-    return posts.map((child) => <HomePost key={child.id} post={child} />);
-  }
-  useEffect(() => {
-    void utils.posts.getComments.invalidate();
-    // eslint-disable-next-line
-  }, [commentAdded]);
-
+  const commentsState = useSelector((state: AppState) => state.comments);
+  const { data: commentData } = api.posts.getComments.useQuery(post.id, {
+    enabled: !!commentsState[post.id]?.visibleComments,
+  });
   return (
     <li className="my-2 border p-2">
-      <Link href={`post/${post.id}`}>{post.body}</Link>
-      {!isLoading || fetchStatus === "idle" ? (
-        <AddPost parentId={post.id} setCommentAdded={setCommentAdded} />
-      ) : (
-        <div></div>
-      )}
+      <Link href={`post/${post.id}`} className="block">
+        {post.body}
+      </Link>
+      <p>{post.id}</p>
       {post._count.directChildren > 0 &&
-        !showComments &&
-        !(commentAdded > 0) && (
-          <button
-            className="mt-2"
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              setShowComments((prevShow: boolean) => !prevShow);
-            }}
-          >
-            Show Comments
-          </button>
-        )}
-      {(showComments || commentAdded > 0) && isLoading && (
-        <span>Loading...</span>
+      !commentsState[post.id]?.visibleComments ? (
+        <ShowCommentsButton postId={post.id}>
+          <BiCommentDetail className="inline" /> {post._count.directChildren}
+        </ShowCommentsButton>
+      ) : (
+        <>
+          <BiCommentDetail className="inline" /> {post._count.directChildren}
+        </>
       )}
-      {(showComments || commentAdded > 0) && data && (
-        <ul>{wrapChildren(data)}</ul>
-      )}
+      <BiHeart className="ml-10 inline" /> {post._count.likes}
+      <AddPost parentId={post.id} />
+      {commentData && <PostList posts={commentData} />}
     </li>
   );
 }

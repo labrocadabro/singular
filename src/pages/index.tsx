@@ -4,13 +4,19 @@ import AddPost from "~/components/AddPost";
 import HomePost from "~/components/HomePost";
 
 const Home: NextPage = () => {
-  const { data: postData } = api.posts.list.useQuery({ limit: 10 });
-  const posts = postData?.map((post) => <HomePost key={post.id} post={post} />);
+  const { data: postData } = api.posts.list.useQuery({
+    limit: 10,
+  });
+
   return (
     <section>
       <h2>Feed</h2>
       <AddPost />
-      <ul>{posts}</ul>
+      <ul>
+        {postData?.map((post) => (
+          <HomePost key={post.id} post={post} />
+        ))}
+      </ul>
     </section>
   );
 };
