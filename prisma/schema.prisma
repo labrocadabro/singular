@@ -53,11 +53,12 @@ model Post {
 }
 
 model ParentChild {
-  id       String @id @default(cuid())
-  parentId String
-  childId  String
-  parent   Post   @relation("parents", fields: [parentId], references: [id], onDelete: Cascade)
-  child    Post   @relation("children", fields: [childId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  parentId  String
+  childId   String
+  parent    Post     @relation("parents", fields: [parentId], references: [id], onDelete: Cascade)
+  child     Post     @relation("children", fields: [childId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 
   @@index([parentId])
   @@index([childId])

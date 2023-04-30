@@ -68,12 +68,17 @@ export const postRouter = createTRPCRouter({
     const post = await ctx.prisma.post.findUnique({
       where: { id: input },
       include: {
-        children: { include: { child: true } },
-        parents: true,
+        children: { include: { child: true }, orderBy: { createdAt: "desc" } },
+        parents: { include: { parent: true }, orderBy: { createdAt: "asc" } },
       },
     });
-    if (!post) return;
-    return { ...post, children: post.children.map((child) => child.child) };
+    // TODO: 404 here?
+    if (!post) throw new Error();
+    return {
+      ...post,
+      children: post.children.map((child) => child.child),
+      parents: post.parents.map((parent) => parent.parent),
+    };
   }),
   getComments: publicProcedure
     .input(z.string())

@@ -5,19 +5,19 @@ export type Post = {
   children?: Post[];
 };
 
-export function preparePostData(data: Post, allChildren: Post[]): Post {
+export function addCommentData(post: Post, allChildren: Post[]): Post {
   const directChildren: Post[] = [];
   const descendents: Post[] = [];
   allChildren.forEach((child) => {
-    if (child.parentId === data.id) directChildren.push(child);
+    if (child.parentId === post.id) directChildren.push(child);
     else descendents.push(child);
   });
   return {
-    id: data.id,
-    parentId: data.parentId,
-    body: data.body,
+    id: post.id,
+    parentId: post.parentId,
+    body: post.body,
     children: directChildren.length
-      ? directChildren.map((child) => preparePostData(child, descendents))
+      ? directChildren.map((child) => addCommentData(child, descendents))
       : undefined,
   };
 }

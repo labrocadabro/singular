@@ -1,4 +1,4 @@
-import type { Post } from "~/utils/preparePostData";
+import type { Post } from "~/utils/addCommentData";
 
 export default function DisplayComments({ data }: { data: Post[] }) {
   return (
