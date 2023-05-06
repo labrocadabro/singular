@@ -6,83 +6,87 @@ import { modifyOne } from "~/store/commentsSlice";
 import { useDispatch } from "react-redux";
 
 interface FormInput {
-  body: string;
+	body: string;
 }
 
 type Props = {
-  parentId?: string;
+	parentId?: string;
+	user: {
+		userId: string;
+		username: string;
+	};
 };
 
-export default function AddPost({ parentId }: Props) {
-  const [showForm, setShowForm] = useState(false);
-  const utils = api.useContext();
-  const dispatch = useDispatch();
-  const { mutateAsync } = api.posts.addPost.useMutation({
-    async onSuccess() {
-      reset({ body: "" });
-      await utils.posts.list.invalidate();
-      if (parentId) {
-        await utils.posts.getComments.invalidate(parentId);
-      }
-      dispatch(
-        modifyOne({
-          id: parentId as string,
-          addingNewComment: false,
-          visibleComments: true,
-        })
-      );
-    },
-  });
+export default function AddPost({ parentId, user }: Props) {
+	const [showForm, setShowForm] = useState(false);
+	const utils = api.useContext();
+	const dispatch = useDispatch();
+	const { mutateAsync } = api.posts.addPost.useMutation({
+		async onSuccess() {
+			reset({ body: "" });
+			await utils.posts.list.invalidate();
+			if (parentId) {
+				await utils.posts.getComments.invalidate(parentId);
+			}
+			dispatch(
+				modifyOne({
+					id: parentId as string,
+					addingNewComment: false,
+					visibleComments: true,
+				})
+			);
+		},
+	});
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { isSubmitting },
-  } = useForm<FormInput>({
-    defaultValues: { body: "" },
-  });
-  const onSubmit: SubmitHandler<FormInput> = async (data) => {
-    dispatch(
-      modifyOne({
-        id: parentId as string,
-        addingNewComment: true,
-      })
-    );
-    await mutateAsync({ body: data.body, parentId });
-  };
-  return (
-    <>
-      {!!parentId &&
-        (showForm ? (
-          <BiCommentMinus
-            onClick={() => {
-              setShowForm((prevState) => !prevState);
-            }}
-          />
-        ) : (
-          <BiCommentAdd
-            onClick={() => {
-              setShowForm((prevState) => !prevState);
-            }}
-          />
-        ))}
+	const {
+		register,
+		handleSubmit,
+		reset,
+		formState: { isSubmitting },
+	} = useForm<FormInput>({
+		defaultValues: { body: "" },
+	});
+	const onSubmit: SubmitHandler<FormInput> = async (data) => {
+		dispatch(
+			modifyOne({
+				id: parentId as string,
+				addingNewComment: true,
+			})
+		);
+		await mutateAsync({ body: data.body, parentId, userId: user.userId });
+	};
+	return (
+		<>
+			{!!parentId &&
+				(showForm ? (
+					<BiCommentMinus
+						onClick={() => {
+							setShowForm((prevState) => !prevState);
+						}}
+					/>
+				) : (
+					<BiCommentAdd
+						onClick={() => {
+							setShowForm((prevState) => !prevState);
+						}}
+					/>
+				))}
 
-      {(showForm || !parentId) && (
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <label htmlFor="post">New {parentId ? "comment" : "post"}:</label>
-          <input
-            {...register("body")}
-            id="post"
-            className="mx-1"
-            autoComplete="off"
-          />
-          <button type="submit" disabled={isSubmitting}>
-            Add
-          </button>
-        </form>
-      )}
-      {!parentId && isSubmitting && "Loading..."}
-    </>
-  );
+			{(showForm || !parentId) && (
+				<form onSubmit={handleSubmit(onSubmit)}>
+					<label htmlFor="post">New {parentId ? "comment" : "post"}:</label>
+					<input
+						{...register("body")}
+						id="post"
+						className="mx-1"
+						autoComplete="off"
+					/>
+					<button type="submit" disabled={isSubmitting}>
+						Add
+					</button>
+				</form>
+			)}
+			{!parentId && isSubmitting && "Loading..."}
+		</>
+	);
 }
