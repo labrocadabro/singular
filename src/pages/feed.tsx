@@ -13,7 +13,7 @@ import type { User } from "lucia-auth";
 
 export const getServerSideProps = async (
 	context: GetServerSidePropsContext
-): Promise<GetServerSidePropsResult<{ user: User }>> => {
+): Promise<GetServerSidePropsResult<{ user: User | null }>> => {
 	const authRequest = auth.handleRequest(context.req, context.res);
 	const { user } = await authRequest.validateUser();
 	return {
@@ -36,7 +36,7 @@ export default function Feed(
 			{props.user && <AddPost user={props.user} />}
 			<ul>
 				{postData?.map((post) => (
-					<HomePost key={post.id} post={post} />
+					<HomePost key={post.id} post={post} user={props.user ?? undefined} />
 				))}
 			</ul>
 		</section>

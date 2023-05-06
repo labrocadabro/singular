@@ -4,6 +4,7 @@ import { api } from "~/utils/api";
 import { BiCommentAdd, BiCommentMinus } from "react-icons/bi";
 import { modifyOne } from "~/store/commentsSlice";
 import { useDispatch } from "react-redux";
+import type { User } from "lucia-auth";
 
 interface FormInput {
 	body: string;
@@ -11,10 +12,7 @@ interface FormInput {
 
 type Props = {
 	parentId?: string;
-	user: {
-		userId: string;
-		username: string;
-	};
+	user?: User;
 };
 
 export default function AddPost({ parentId, user }: Props) {
@@ -47,6 +45,7 @@ export default function AddPost({ parentId, user }: Props) {
 		defaultValues: { body: "" },
 	});
 	const onSubmit: SubmitHandler<FormInput> = async (data) => {
+		if (!user) return;
 		dispatch(
 			modifyOne({
 				id: parentId as string,
