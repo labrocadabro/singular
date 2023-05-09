@@ -23,6 +23,8 @@ model AuthUser {
   username     String        @unique
   auth_session AuthSession[]
   auth_key     AuthKey[]
+  Post         Post[]
+  Like         Like[]
 
   @@map("auth_user")
 }
@@ -50,22 +52,21 @@ model AuthKey {
   @@map("auth_key")
 }
 
-model Account {
-  id            String   @id @default(cuid())
-  userId        String
-  private       Boolean  @default(false)
-  active        Boolean  @default(true)
-  deactivatedOn DateTime
-  bio           String   @db.VarChar(20)
-  photo         String   @db.TinyText
-  Post          Post[]
-  Like          Like[]
-}
+// model Account {
+//   id            String   @id @default(cuid())
+//   userId        String
+//   private       Boolean  @default(false)
+//   active        Boolean  @default(true)
+//   deactivatedOn DateTime
+//   bio           String   @db.VarChar(20)
+//   photo         String   @db.TinyText
+//   Post          Post[]
+//   Like          Like[]
+// }
 
 model Post {
   id             String        @id @default(cuid())
   userId         String
-  accountId      String
   parentId       String?
   body           String        @db.VarChar(20)
   createdAt      DateTime      @default(now())
@@ -75,14 +76,15 @@ model Post {
   isEdited       Boolean       @default(false)
   isFlagged      Boolean       @default(false)
   overrideFlag   Boolean       @default(false)
-  account        Account       @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  user           AuthUser      @relation(fields: [userId], references: [id], onDelete: Cascade)
   directParent   Post?         @relation("DirectParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   directChildren Post[]        @relation("DirectParent")
   parents        ParentChild[] @relation("children")
   children       ParentChild[] @relation("parents")
   likes          Like[]
+  accountId      String?
 
-  @@index([accountId])
+  @@index([userId])
   @@index([parentId])
 }
 
@@ -99,12 +101,12 @@ model ParentChild {
 }
 
 model Like {
-  id        String  @id @default(cuid())
-  postId    String
-  accountId String
-  post      Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
-  account   Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  id     String   @id @default(cuid())
+  postId String
+  userId String
+  post   Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user   AuthUser @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([postId])
-  @@index([accountId])
+  @@index([userId])
 }

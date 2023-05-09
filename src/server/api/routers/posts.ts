@@ -37,7 +37,6 @@ export const postRouter = createTRPCRouter({
 			// add the new post
 			const newPost = ctx.prisma.post.create({
 				data: {
-					accountId: "clgrlczy00000h13ir4lvltn1",
 					userId: input.userId,
 					body: input.body,
 					parentId: input.parentId ?? null,
