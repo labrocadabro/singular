@@ -16,6 +16,7 @@ type Props = {
 };
 
 export default function AddPost({ parentId, user }: Props) {
+	if (!user) return <></>;
 	const [showForm, setShowForm] = useState(false);
 	const utils = api.useContext();
 	const dispatch = useDispatch();
@@ -45,7 +46,6 @@ export default function AddPost({ parentId, user }: Props) {
 		defaultValues: { body: "" },
 	});
 	const onSubmit: SubmitHandler<FormInput> = async (data) => {
-		if (!user) return;
 		dispatch(
 			modifyOne({
 				id: parentId as string,
@@ -80,7 +80,11 @@ export default function AddPost({ parentId, user }: Props) {
 						className="mx-1"
 						autoComplete="off"
 					/>
-					<button type="submit" disabled={isSubmitting}>
+					<button
+						type="submit"
+						disabled={isSubmitting}
+						className="disabled:bg-red-300"
+					>
 						Add
 					</button>
 				</form>

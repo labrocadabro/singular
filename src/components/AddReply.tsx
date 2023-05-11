@@ -12,6 +12,7 @@ type Props = {
 };
 
 export default function AddReply({ postId, user }: Props) {
+	if (!user) return <></>;
 	const utils = api.useContext();
 	const { mutateAsync } = api.posts.addPost.useMutation({
 		async onSuccess() {
@@ -29,7 +30,6 @@ export default function AddReply({ postId, user }: Props) {
 		defaultValues: { body: "" },
 	});
 	const onSubmit: SubmitHandler<FormInput> = async (data) => {
-		if (!user) return;
 		await mutateAsync({
 			body: data.body,
 			parentId: postId,
