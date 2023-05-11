@@ -9,6 +9,7 @@ let db;
 db = new PrismaClient();
 
 export const auth = lucia({
+	// @ts-ignore
 	adapter: prisma(db),
 	env: process.env.NODE_ENV === "development" ? "DEV" : "PROD",
 	middleware: node(),
