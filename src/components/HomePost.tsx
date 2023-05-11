@@ -24,10 +24,10 @@ export default function HomePost({ post, user }: Props) {
 	);
 	return (
 		<li className="my-2 border p-2">
+			<p>@{post.user.username}</p>
 			<Link href={`post/${post.id}`} className="block">
 				{post.body}
 			</Link>
-			<p>{post.id}</p>
 			{post._count.directChildren > 0 &&
 			!commentsState[post.id]?.visibleComments ? (
 				<ShowCommentsButton postId={post.id}>
@@ -43,7 +43,7 @@ export default function HomePost({ post, user }: Props) {
 			{((!!commentsState[post.id]?.visibleComments && isLoading) ||
 				!!commentsState[post.id]?.addingNewComment) &&
 				"Loading..."}
-			{commentData && <PostList posts={commentData} />}
+			{commentData && <PostList posts={commentData} user={user} />}
 		</li>
 	);
 }

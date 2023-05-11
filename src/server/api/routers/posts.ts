@@ -20,6 +20,11 @@ export const postRouter = createTRPCRouter({
 							likes: true,
 						},
 					},
+					user: {
+						select: {
+							username: true,
+						},
+					},
 				},
 				take: input.limit,
 			});
@@ -69,8 +74,19 @@ export const postRouter = createTRPCRouter({
 		const post = await ctx.prisma.post.findUnique({
 			where: { id: input },
 			include: {
-				children: { include: { child: true }, orderBy: { createdAt: "desc" } },
-				parents: { include: { parent: true }, orderBy: { createdAt: "asc" } },
+				user: { select: { username: true } },
+				children: {
+					include: {
+						child: { include: { user: { select: { username: true } } } },
+					},
+					orderBy: { createdAt: "desc" },
+				},
+				parents: {
+					include: {
+						parent: { include: { user: { select: { username: true } } } },
+					},
+					orderBy: { createdAt: "asc" },
+				},
 			},
 		});
 		// TODO: 404 here?
@@ -93,6 +109,11 @@ export const postRouter = createTRPCRouter({
 								select: {
 									directChildren: true,
 									likes: true,
+								},
+							},
+							user: {
+								select: {
+									username: true,
 								},
 							},
 						},
