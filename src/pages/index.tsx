@@ -1,4 +1,6 @@
-import { useRouter } from "next/router";
+import { api } from "~/utils/api";
+import AddPost from "~/components/AddPost";
+import HomePost from "~/components/HomePost";
 import { auth } from "~/auth/lucia";
 
 import type {
@@ -7,7 +9,6 @@ import type {
 	InferGetServerSidePropsType,
 } from "next";
 import type { User } from "lucia-auth";
-import Link from "next/link";
 
 export const getServerSideProps = async (
 	context: GetServerSidePropsContext
@@ -21,33 +22,22 @@ export const getServerSideProps = async (
 	};
 };
 
-export default function Index(
+export default function Home(
 	props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
-	const router = useRouter();
+	const { data: postData } = api.posts.list.useQuery({
+		limit: 10,
+	});
+
 	return (
-		<>
-			{props.user ? (
-				<>
-					<p>You are logged in.</p>
-					<button
-						onClick={async () => {
-							try {
-								await fetch("/api/logout", {
-									method: "POST",
-								});
-								router.push("/login");
-							} catch (e) {
-								console.log(e);
-							}
-						}}
-					>
-						Sign out
-					</button>
-				</>
-			) : (
-				<Link href="/login">Login</Link>
-			)}
-		</>
+		<section>
+			<h2>Feed</h2>
+			{props.user && <AddPost user={props.user} />}
+			<ul>
+				{postData?.map((post) => (
+					<HomePost key={post.id} post={post} user={props.user ?? undefined} />
+				))}
+			</ul>
+		</section>
 	);
 }
