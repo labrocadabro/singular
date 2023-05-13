@@ -11,7 +11,7 @@ type Data = {
 export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 	if (req.method !== "POST")
 		return res.status(404).json({ error: "Not found" });
-	const { username, password } =
+	const { username, password, avatar } =
 		typeof req.body === "string" ? JSON.parse(req.body) : req.body;
 	if (!username || !password) {
 		return res.status(200).json({
@@ -27,6 +27,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 			},
 			attributes: {
 				username,
+				avatar,
 			},
 		});
 		const session = await auth.createSession(user.userId);

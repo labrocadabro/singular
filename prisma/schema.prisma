@@ -21,6 +21,7 @@ enum CanReply {
 model AuthUser {
   id           String        @id @unique
   username     String        @unique
+  avatar       String        @default("/avatars/default.png") @db.TinyText
   auth_session AuthSession[]
   auth_key     AuthKey[]
   Post         Post[]

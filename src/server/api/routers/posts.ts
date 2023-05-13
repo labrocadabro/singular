@@ -23,6 +23,7 @@ export const postRouter = createTRPCRouter({
 					user: {
 						select: {
 							username: true,
+							avatar: true,
 						},
 					},
 				},
@@ -74,16 +75,20 @@ export const postRouter = createTRPCRouter({
 		const post = await ctx.prisma.post.findUnique({
 			where: { id: input },
 			include: {
-				user: { select: { username: true } },
+				user: { select: { username: true, avatar: true } },
 				children: {
 					include: {
-						child: { include: { user: { select: { username: true } } } },
+						child: {
+							include: { user: { select: { username: true, avatar: true } } },
+						},
 					},
 					orderBy: { createdAt: "desc" },
 				},
 				parents: {
 					include: {
-						parent: { include: { user: { select: { username: true } } } },
+						parent: {
+							include: { user: { select: { username: true, avatar: true } } },
+						},
 					},
 					orderBy: { createdAt: "asc" },
 				},
@@ -114,6 +119,7 @@ export const postRouter = createTRPCRouter({
 							user: {
 								select: {
 									username: true,
+									avatar: true,
 								},
 							},
 						},

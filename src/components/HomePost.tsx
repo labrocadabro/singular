@@ -9,6 +9,7 @@ import ShowCommentsButton from "./ShowCommentsButton";
 import { BiCommentDetail, BiHeart } from "react-icons/bi";
 import type { User } from "lucia-auth";
 import CommentModal from "./CommentModal";
+import UserAvatar from "./UserAvatar";
 
 type Props = {
 	post: PostWithCounts;
@@ -25,7 +26,9 @@ export default function HomePost({ post, user }: Props) {
 	);
 	return (
 		<li className="relative my-2 border p-2">
-			<p>@{post.user.username}</p>
+			<p>
+				<UserAvatar user={post.user} size={30} /> @{post.user.username}
+			</p>
 			<Link href={`post/${post.id}`} className="block">
 				{post.body}
 			</Link>
