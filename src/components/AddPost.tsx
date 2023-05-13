@@ -80,11 +80,7 @@ export default function AddPost({ parentId, user }: Props) {
 						className="mx-1"
 						autoComplete="off"
 					/>
-					<button
-						type="submit"
-						disabled={isSubmitting}
-						className="disabled:bg-red-300"
-					>
+					<button type="submit" disabled={isSubmitting} className="button">
 						Add
 					</button>
 				</form>

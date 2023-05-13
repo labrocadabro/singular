@@ -46,7 +46,7 @@ export default function AddReply({ postId, user }: Props) {
 					className="mx-1"
 					autoComplete="off"
 				/>
-				<button type="submit" disabled={isSubmitting}>
+				<button type="submit" disabled={isSubmitting} className="button">
 					Add
 				</button>
 			</form>
